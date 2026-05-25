@@ -1,0 +1,1463 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification for SMPN 1 Dumai website
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: berita
+    description: Articles and news
+  - name: guru
+    description: Teacher and staff directory
+  - name: galeri
+    description: Photo gallery
+  - name: pengumuman
+    description: Announcements
+  - name: prestasi
+    description: Achievements
+  - name: ekskul
+    description: Extracurricular activities
+  - name: profil
+    description: School profile
+  - name: slider
+    description: Hero slider
+  - name: spmb
+    description: New student admission info
+  - name: statistik
+    description: School statistics
+  - name: admin
+    description: Admin panel operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ─── BERITA ──────────────────────────────────────────────────────────────────
+  /berita:
+    get:
+      operationId: listBerita
+      tags: [berita]
+      summary: List all published articles
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 9
+        - name: kategori
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of articles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BeritaListResponse"
+    post:
+      operationId: createBerita
+      tags: [berita]
+      summary: Create new article (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBeritaBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Berita"
+
+  /berita/terbaru:
+    get:
+      operationId: getBeritaTerbaru
+      tags: [berita]
+      summary: Get latest 6 articles for homepage
+      responses:
+        "200":
+          description: Latest articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Berita"
+
+  /berita/{id}:
+    get:
+      operationId: getBeritaById
+      tags: [berita]
+      summary: Get article by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Berita"
+    put:
+      operationId: updateBerita
+      tags: [berita]
+      summary: Update article (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBeritaBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Berita"
+    delete:
+      operationId: deleteBerita
+      tags: [berita]
+      summary: Delete article (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── GURU ────────────────────────────────────────────────────────────────────
+  /guru:
+    get:
+      operationId: listGuru
+      tags: [guru]
+      summary: List teachers and staff
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: mata_pelajaran
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            default: nama
+        - name: order
+          in: query
+          schema:
+            type: string
+            default: asc
+      responses:
+        "200":
+          description: List of teachers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Guru"
+    post:
+      operationId: createGuru
+      tags: [guru]
+      summary: Create teacher (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGuruBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guru"
+
+  /guru/{id}:
+    get:
+      operationId: getGuruById
+      tags: [guru]
+      summary: Get teacher by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Teacher
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guru"
+    put:
+      operationId: updateGuru
+      tags: [guru]
+      summary: Update teacher (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGuruBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guru"
+    delete:
+      operationId: deleteGuru
+      tags: [guru]
+      summary: Delete teacher (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── GALERI ──────────────────────────────────────────────────────────────────
+  /galeri:
+    get:
+      operationId: listGaleri
+      tags: [galeri]
+      summary: List gallery photos
+      parameters:
+        - name: kategori
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 12
+      responses:
+        "200":
+          description: Gallery photos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GaleriListResponse"
+    post:
+      operationId: createGaleri
+      tags: [galeri]
+      summary: Add gallery photo (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGaleriBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Galeri"
+
+  /galeri/{id}:
+    delete:
+      operationId: deleteGaleri
+      tags: [galeri]
+      summary: Delete gallery photo (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── PENGUMUMAN ──────────────────────────────────────────────────────────────
+  /pengumuman:
+    get:
+      operationId: listPengumuman
+      tags: [pengumuman]
+      summary: List announcements
+      responses:
+        "200":
+          description: List of announcements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pengumuman"
+    post:
+      operationId: createPengumuman
+      tags: [pengumuman]
+      summary: Create announcement (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePengumumanBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pengumuman"
+
+  /pengumuman/{id}:
+    put:
+      operationId: updatePengumuman
+      tags: [pengumuman]
+      summary: Update announcement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePengumumanBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pengumuman"
+    delete:
+      operationId: deletePengumuman
+      tags: [pengumuman]
+      summary: Delete announcement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── PRESTASI ────────────────────────────────────────────────────────────────
+  /prestasi:
+    get:
+      operationId: listPrestasi
+      tags: [prestasi]
+      summary: List achievements
+      parameters:
+        - name: kategori
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of achievements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prestasi"
+    post:
+      operationId: createPrestasi
+      tags: [prestasi]
+      summary: Create achievement (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrestasiBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prestasi"
+
+  /prestasi/{id}:
+    put:
+      operationId: updatePrestasi
+      tags: [prestasi]
+      summary: Update achievement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrestasiBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prestasi"
+    delete:
+      operationId: deletePrestasi
+      tags: [prestasi]
+      summary: Delete achievement (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── EKSKUL ──────────────────────────────────────────────────────────────────
+  /ekskul:
+    get:
+      operationId: listEkskul
+      tags: [ekskul]
+      summary: List extracurricular activities
+      responses:
+        "200":
+          description: List of extracurriculars
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ekskul"
+    post:
+      operationId: createEkskul
+      tags: [ekskul]
+      summary: Create extracurricular (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEkskulBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ekskul"
+
+  /ekskul/{id}:
+    put:
+      operationId: updateEkskul
+      tags: [ekskul]
+      summary: Update extracurricular (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEkskulBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ekskul"
+    delete:
+      operationId: deleteEkskul
+      tags: [ekskul]
+      summary: Delete extracurricular (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── PROFIL ──────────────────────────────────────────────────────────────────
+  /profil:
+    get:
+      operationId: getProfil
+      tags: [profil]
+      summary: Get school profile
+      responses:
+        "200":
+          description: School profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profil"
+    put:
+      operationId: updateProfil
+      tags: [profil]
+      summary: Update school profile (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfilBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profil"
+
+  # ─── SLIDER ──────────────────────────────────────────────────────────────────
+  /slider:
+    get:
+      operationId: listSlider
+      tags: [slider]
+      summary: List hero slider images
+      responses:
+        "200":
+          description: Slider images
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Slider"
+    post:
+      operationId: createSlider
+      tags: [slider]
+      summary: Add slider image (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSliderBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Slider"
+
+  /slider/{id}:
+    delete:
+      operationId: deleteSlider
+      tags: [slider]
+      summary: Delete slider image (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── SPMB ────────────────────────────────────────────────────────────────────
+  /spmb:
+    get:
+      operationId: getSpmbInfo
+      tags: [spmb]
+      summary: Get SPMB admission information
+      responses:
+        "200":
+          description: SPMB info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpmbInfo"
+    put:
+      operationId: updateSpmbInfo
+      tags: [spmb]
+      summary: Update SPMB info (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSpmbInfoBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpmbInfo"
+
+  # ─── STATISTIK ───────────────────────────────────────────────────────────────
+  /statistik:
+    get:
+      operationId: getStatistik
+      tags: [statistik]
+      summary: Get school statistics
+      responses:
+        "200":
+          description: Statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Statistik"
+
+  /statistik/pengunjung:
+    post:
+      operationId: incrementPengunjung
+      tags: [statistik]
+      summary: Increment visitor count
+      responses:
+        "200":
+          description: Updated visitor count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PengunjungResponse"
+
+  # ─── ADMIN ───────────────────────────────────────────────────────────────────
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginBody"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminLoginResponse"
+
+  /admin/logout:
+    post:
+      operationId: adminLogout
+      tags: [admin]
+      summary: Admin logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /admin/me:
+    get:
+      operationId: getAdminMe
+      tags: [admin]
+      summary: Get current admin user
+      responses:
+        "200":
+          description: Admin user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "401":
+          description: Unauthorized
+
+  /admin/dashboard:
+    get:
+      operationId: getAdminDashboard
+      tags: [admin]
+      summary: Get admin dashboard stats summary
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDashboard"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message
+
+    # ── Berita ─────────────────────────────────────────────────────────────────
+    Berita:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul:
+          type: string
+        konten:
+          type: string
+        gambar:
+          type: string
+          nullable: true
+        kategori:
+          type: string
+        penulis:
+          type: string
+        slug:
+          type: string
+        is_published:
+          type: boolean
+        dilihat:
+          type: integer
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - judul
+        - konten
+        - kategori
+        - penulis
+        - slug
+        - is_published
+        - dilihat
+        - created_at
+        - updated_at
+
+    BeritaListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Berita"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - data
+        - total
+        - page
+        - limit
+
+    CreateBeritaBody:
+      type: object
+      properties:
+        judul:
+          type: string
+        konten:
+          type: string
+        gambar:
+          type: string
+          nullable: true
+        kategori:
+          type: string
+        penulis:
+          type: string
+        is_published:
+          type: boolean
+      required:
+        - judul
+        - konten
+        - kategori
+        - penulis
+        - is_published
+
+    # ── Guru ───────────────────────────────────────────────────────────────────
+    Guru:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama:
+          type: string
+        nip:
+          type: string
+          nullable: true
+        mata_pelajaran:
+          type: string
+        jabatan:
+          type: string
+        foto:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+      required:
+        - id
+        - nama
+        - mata_pelajaran
+        - jabatan
+        - is_active
+        - created_at
+
+    CreateGuruBody:
+      type: object
+      properties:
+        nama:
+          type: string
+        nip:
+          type: string
+          nullable: true
+        mata_pelajaran:
+          type: string
+        jabatan:
+          type: string
+        foto:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+        - nama
+        - mata_pelajaran
+        - jabatan
+        - is_active
+
+    # ── Galeri ─────────────────────────────────────────────────────────────────
+    Galeri:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul:
+          type: string
+        gambar:
+          type: string
+        kategori:
+          type: string
+        deskripsi:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+      required:
+        - id
+        - judul
+        - gambar
+        - kategori
+        - created_at
+
+    GaleriListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Galeri"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - data
+        - total
+        - page
+        - limit
+
+    CreateGaleriBody:
+      type: object
+      properties:
+        judul:
+          type: string
+        gambar:
+          type: string
+        kategori:
+          type: string
+        deskripsi:
+          type: string
+          nullable: true
+      required:
+        - judul
+        - gambar
+        - kategori
+
+    # ── Pengumuman ─────────────────────────────────────────────────────────────
+    Pengumuman:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul:
+          type: string
+        konten:
+          type: string
+        prioritas:
+          type: integer
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+      required:
+        - id
+        - judul
+        - konten
+        - prioritas
+        - is_active
+        - created_at
+
+    CreatePengumumanBody:
+      type: object
+      properties:
+        judul:
+          type: string
+        konten:
+          type: string
+        prioritas:
+          type: integer
+        is_active:
+          type: boolean
+      required:
+        - judul
+        - konten
+        - prioritas
+        - is_active
+
+    # ── Prestasi ───────────────────────────────────────────────────────────────
+    Prestasi:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul:
+          type: string
+        deskripsi:
+          type: string
+          nullable: true
+        tanggal:
+          type: string
+        tingkat:
+          type: string
+        kategori:
+          type: string
+        created_at:
+          type: string
+      required:
+        - id
+        - judul
+        - tanggal
+        - tingkat
+        - kategori
+        - created_at
+
+    CreatePrestasiBody:
+      type: object
+      properties:
+        judul:
+          type: string
+        deskripsi:
+          type: string
+          nullable: true
+        tanggal:
+          type: string
+        tingkat:
+          type: string
+        kategori:
+          type: string
+      required:
+        - judul
+        - tanggal
+        - tingkat
+        - kategori
+
+    # ── Ekskul ─────────────────────────────────────────────────────────────────
+    Ekskul:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama:
+          type: string
+        deskripsi:
+          type: string
+          nullable: true
+        gambar:
+          type: string
+          nullable: true
+        pembina:
+          type: string
+          nullable: true
+        jadwal:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+      required:
+        - id
+        - nama
+        - is_active
+        - created_at
+
+    CreateEkskulBody:
+      type: object
+      properties:
+        nama:
+          type: string
+        deskripsi:
+          type: string
+          nullable: true
+        gambar:
+          type: string
+          nullable: true
+        pembina:
+          type: string
+          nullable: true
+        jadwal:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+        - nama
+        - is_active
+
+    # ── Profil ─────────────────────────────────────────────────────────────────
+    Profil:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama_sekolah:
+          type: string
+        npsn:
+          type: string
+        alamat:
+          type: string
+        telepon:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        kepala_sekolah:
+          type: string
+        foto_kepsek:
+          type: string
+          nullable: true
+        sambutan_kepsek:
+          type: string
+          nullable: true
+        visi:
+          type: string
+        misi:
+          type: string
+        sejarah:
+          type: string
+          nullable: true
+        akreditasi:
+          type: string
+          nullable: true
+        tahun_berdiri:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          nullable: true
+      required:
+        - id
+        - nama_sekolah
+        - npsn
+        - alamat
+        - kepala_sekolah
+        - visi
+        - misi
+
+    UpdateProfilBody:
+      type: object
+      properties:
+        nama_sekolah:
+          type: string
+        npsn:
+          type: string
+        alamat:
+          type: string
+        telepon:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        kepala_sekolah:
+          type: string
+        foto_kepsek:
+          type: string
+          nullable: true
+        sambutan_kepsek:
+          type: string
+          nullable: true
+        visi:
+          type: string
+        misi:
+          type: string
+        sejarah:
+          type: string
+          nullable: true
+        akreditasi:
+          type: string
+          nullable: true
+        tahun_berdiri:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          nullable: true
+      required:
+        - nama_sekolah
+        - npsn
+        - alamat
+        - kepala_sekolah
+        - visi
+        - misi
+
+    # ── Slider ─────────────────────────────────────────────────────────────────
+    Slider:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul:
+          type: string
+        subjudul:
+          type: string
+          nullable: true
+        gambar:
+          type: string
+        urutan:
+          type: integer
+        is_active:
+          type: boolean
+      required:
+        - id
+        - judul
+        - gambar
+        - urutan
+        - is_active
+
+    CreateSliderBody:
+      type: object
+      properties:
+        judul:
+          type: string
+        subjudul:
+          type: string
+          nullable: true
+        gambar:
+          type: string
+        urutan:
+          type: integer
+        is_active:
+          type: boolean
+      required:
+        - judul
+        - gambar
+        - urutan
+        - is_active
+
+    # ── SPMB ───────────────────────────────────────────────────────────────────
+    SpmbInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        judul:
+          type: string
+        konten:
+          type: string
+        tanggal_buka:
+          type: string
+          nullable: true
+        tanggal_tutup:
+          type: string
+          nullable: true
+        kuota:
+          type: integer
+          nullable: true
+        persyaratan:
+          type: string
+          nullable: true
+        link_pendaftaran:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+        - id
+        - judul
+        - konten
+        - is_active
+
+    UpdateSpmbInfoBody:
+      type: object
+      properties:
+        judul:
+          type: string
+        konten:
+          type: string
+        tanggal_buka:
+          type: string
+          nullable: true
+        tanggal_tutup:
+          type: string
+          nullable: true
+        kuota:
+          type: integer
+          nullable: true
+        persyaratan:
+          type: string
+          nullable: true
+        link_pendaftaran:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+        - judul
+        - konten
+        - is_active
+
+    # ── Statistik ──────────────────────────────────────────────────────────────
+    Statistik:
+      type: object
+      properties:
+        total_siswa:
+          type: integer
+        total_guru:
+          type: integer
+        total_staff:
+          type: integer
+        total_kelas:
+          type: integer
+        pengunjung_hari_ini:
+          type: integer
+        total_pengunjung:
+          type: integer
+        total_prestasi:
+          type: integer
+        total_ekskul:
+          type: integer
+      required:
+        - total_siswa
+        - total_guru
+        - total_staff
+        - total_kelas
+        - pengunjung_hari_ini
+        - total_pengunjung
+        - total_prestasi
+        - total_ekskul
+
+    PengunjungResponse:
+      type: object
+      properties:
+        pengunjung_hari_ini:
+          type: integer
+        total_pengunjung:
+          type: integer
+      required:
+        - pengunjung_hari_ini
+        - total_pengunjung
+
+    # ── Admin ──────────────────────────────────────────────────────────────────
+    AdminLoginBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    AdminLoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/AdminUser"
+      required:
+        - success
+        - token
+        - user
+
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        nama:
+          type: string
+        role:
+          type: string
+      required:
+        - id
+        - username
+        - nama
+        - role
+
+    AdminDashboard:
+      type: object
+      properties:
+        total_berita:
+          type: integer
+        total_guru:
+          type: integer
+        total_galeri:
+          type: integer
+        total_prestasi:
+          type: integer
+        total_pengunjung:
+          type: integer
+        pengunjung_hari_ini:
+          type: integer
+        berita_terbaru:
+          type: array
+          items:
+            $ref: "#/components/schemas/Berita"
+      required:
+        - total_berita
+        - total_guru
+        - total_galeri
+        - total_prestasi
+        - total_pengunjung
+        - pengunjung_hari_ini
+        - berita_terbaru
